@@ -63,6 +63,6 @@ def encrypt_plaintext(plaintext):
     # print(payload)
     return enc_payload_hex
 
-print(encrypt_plaintext(plaintext="2929"))
+# print(encrypt_plaintext(plaintext="2929"))
 
 
