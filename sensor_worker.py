@@ -6,6 +6,7 @@ import json
 # import psutil
 import iot_client
 import http.client
+import requests
 
 
 # # We first check if a libgpiod process is running. If yes, we kill it!
@@ -14,23 +15,39 @@ import http.client
 #         proc.kill()
 # sensor = adafruit_dht.DHT11(board.D23)
 
+def request_sensor_data():
+    try:
+        localhost = "http://127.0.0.1"
+        node_red_port = "1880"
+        path = "sensor"
+        response = requests.get(url="{}:{}/{}".format(localhost,node_red_port,path))
+        response = response.json()
+        return response['temp'],response['humidity']
+    except:
+        pass
+
 def sent_request_to_server(payload):
-    server = "127.0.0.1"
-    port = "3000"
-    post_request = http.client.HTTPConnection(server,port=port)
-    post_request.request("POST","/sensor",body=payload.encode("utf-8"))
-    response = post_request.getresponse()
-    print(response.read().decode())
+    try:
+        server = "192.168.148.100"
+        port = "3000"
+        post_request = http.client.HTTPConnection(server,port=port)
+        post_request.request("POST","/sensor",body=payload.encode("utf-8"))
+        response = post_request.getresponse()
+        print(response.read().decode())
+    except:
+        print("Unable to send data to server")
 
 
 while True:
     try:
-        # temp = sensor.temperature
-        # humidity = sensor.humidity
-        temp = str(77)
-        humidity = str(88)
-        sensordata = "<>".join([temp,humidity])
-
+        try:
+            # temp = sensor.temperature
+            # humidity = sensor.humidity
+            temp,humidity = request_sensor_data()
+            sensordata = "<>".join([temp,humidity])
+            print(sensordata)
+        except:
+            sensordata = "0<>0"
         ## Send Sensor Data to Server
         encrypt_sensor_data = iot_client.encrypt_plaintext(sensordata)
         sent_request_to_server(encrypt_sensor_data)
