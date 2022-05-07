@@ -7,7 +7,8 @@ import json
 import iot_client
 import http.client
 import requests
-
+from uuid import getnode as get_mac
+mac = get_mac()
 
 # # We first check if a libgpiod process is running. If yes, we kill it!
 # for proc in psutil.process_iter():
@@ -44,7 +45,7 @@ while True:
             # temp = sensor.temperature
             # humidity = sensor.humidity
             temp,humidity = request_sensor_data()
-            sensordata = "<>".join([temp,humidity])
+            sensordata = "<>".join([temp,humidity,mac])
             print(sensordata)
         except:
             sensordata = "0<>0"
