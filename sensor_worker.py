@@ -45,10 +45,10 @@ while True:
             # temp = sensor.temperature
             # humidity = sensor.humidity
             temp,humidity = request_sensor_data()
-            sensordata = "<>".join([temp,humidity,mac])
+            sensordata = "<>".join([temp,humidity,str(mac)[:10]])
             print(sensordata)
         except:
-            sensordata = "0<>0"
+            sensordata = "<>".join(["0","0",str(mac)[:10]])
         ## Send Sensor Data to Server
         encrypt_sensor_data = iot_client.encrypt_plaintext(sensordata)
         sent_request_to_server(encrypt_sensor_data)
